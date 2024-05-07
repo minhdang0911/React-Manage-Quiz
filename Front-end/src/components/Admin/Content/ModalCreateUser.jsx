@@ -3,16 +3,27 @@ import Modal from 'react-bootstrap/Modal';
 import { useState } from 'react';
 import './ManageUser.scss';
 import { FcPlus } from 'react-icons/fc';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { postCreateNewUser } from '../../../services/apiServices';
 
-function ModalCreateUser() {
-    const [show, setShow] = useState(false);
+function ModalCreateUser(props) {
+    const { show, setShow } = props;
 
-    const handleClose = () => setShow(false);
+    const handleClose = () => {
+        setShow(false);
+        setEmail('');
+        setPassword('');
+        setUsername('');
+        setRole('USER');
+        setImage('');
+        setPreviewImage('');
+    };
     const handleShow = () => setShow(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [role, setRole] = useState('');
+    const [role, setRole] = useState('USER');
     const [image, setImage] = useState('');
     const [previewImage, setPreviewImage] = useState('');
 
@@ -24,11 +35,51 @@ function ModalCreateUser() {
             // setPreviewImage('');
         }
     };
+
+    const validateEmail = (email) => {
+        return String(email)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            );
+    };
+
+    const handleSubmitCreateUser = async () => {
+        // let data = {
+        //     email: email,
+        //     password: password,
+        //     username: username,
+        //     role: role,
+        //     userImage: image,
+        // };
+        //submit data
+        const isValidEmail = validateEmail(email);
+        if (!isValidEmail) {
+            toast.error('email khong hop le');
+            return;
+        }
+
+        if (!password) {
+            toast.error('vui long nhap mat khau');
+            return;
+        }
+
+        let data = await postCreateNewUser(email, password, username, role, image);
+        if (data && data.EC === 0) {
+            toast.success(data.EM);
+            handleClose();
+        }
+
+        if (data && data.EC !== 0) {
+            toast.error(data.EM);
+        }
+        console.log('check res', data);
+    };
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>
+            {/* <Button variant="primary" onClick={handleShow}>
                 Launch demo modal
-            </Button>
+            </Button> */}
 
             <Modal show={show} onHide={handleClose} size="xl" backdrop="static" className="modal-add-users">
                 <Modal.Header closeButton>
@@ -87,7 +138,7 @@ function ModalCreateUser() {
                     <Button variant="secondary" onClick={handleClose}>
                         Đóng
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button variant="primary" onClick={() => handleSubmitCreateUser()}>
                         Lưu
                     </Button>
                 </Modal.Footer>
