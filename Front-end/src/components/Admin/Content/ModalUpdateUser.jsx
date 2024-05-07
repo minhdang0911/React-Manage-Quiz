@@ -5,10 +5,12 @@ import './ManageUser.scss';
 import { FcPlus } from 'react-icons/fc';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { postCreateNewUser } from '../../../services/apiServices';
+import { putUpdateUser } from '../../../services/apiServices';
+import { useEffect } from 'react';
+import _ from 'lodash';
 
-function ModalCreateUser(props) {
-    const { show, setShow, fetchListUser } = props;
+function ModalUpdateUser(props) {
+    const { show, setShow, fetchListUser, dataUpdate } = props;
 
     const handleClose = () => {
         setShow(false);
@@ -18,6 +20,7 @@ function ModalCreateUser(props) {
         setRole('');
         setImage('');
         setPreviewImage('');
+        props.resetUpdateData();
     };
     const handleShow = () => setShow(true);
     const [email, setEmail] = useState('');
@@ -26,6 +29,21 @@ function ModalCreateUser(props) {
     const [role, setRole] = useState('');
     const [image, setImage] = useState('');
     const [previewImage, setPreviewImage] = useState('');
+
+    useEffect(() => {
+        if (!_.isEmpty(dataUpdate)) {
+            //updateState
+            setEmail(dataUpdate.email);
+            setUsername(dataUpdate.username);
+            setRole(dataUpdate.role);
+            setImage('');
+            if (dataUpdate.image) {
+                setPreviewImage(`data:image/jpeg;base64,${dataUpdate.image}`);
+            }
+
+            console.log('data', dataUpdate.role);
+        }
+    }, [dataUpdate]);
 
     const handleUploadImage = (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
@@ -59,12 +77,7 @@ function ModalCreateUser(props) {
             return;
         }
 
-        if (!password) {
-            toast.error('vui long nhap mat khau');
-            return;
-        }
-
-        let data = await postCreateNewUser(email, password, username, role, image);
+        let data = await putUpdateUser(dataUpdate.id, username, role, image);
         if (data && data.EC === 0) {
             toast.success(data.EM);
             handleClose();
@@ -76,6 +89,7 @@ function ModalCreateUser(props) {
         }
         console.log('check res', data);
     };
+
     return (
         <>
             {/* <Button variant="primary" onClick={handleShow}>
@@ -84,13 +98,14 @@ function ModalCreateUser(props) {
 
             <Modal show={show} onHide={handleClose} size="xl" backdrop="static" className="modal-add-users">
                 <Modal.Header closeButton>
-                    <Modal.Title>Thêm mới người dùng</Modal.Title>
+                    <Modal.Title>Cap nhat người dùng</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form className="row g-3">
                         <div className="col-md-6">
                             <label className="form-label">Email</label>
                             <input
+                                disabled
                                 type="email"
                                 className="form-control"
                                 value={email}
@@ -100,6 +115,7 @@ function ModalCreateUser(props) {
                         <div className="col-md-6">
                             <label className="form-label">Password</label>
                             <input
+                                disabled
                                 type="password"
                                 className="form-control"
                                 value={password}
@@ -119,7 +135,7 @@ function ModalCreateUser(props) {
                         <div className="col-md-4">
                             <label className="form-label">Role</label>
                             <select className="form-select" onChange={(event) => setRole(event.target.value)}>
-                                <option value="USER">Người dùng</option>
+                                <option value=" USER">Người dùng</option>
                                 <option value="ADMIN">Quản trị</option>
                             </select>
                         </div>
@@ -148,4 +164,4 @@ function ModalCreateUser(props) {
     );
 }
 
-export default ModalCreateUser;
+export default ModalUpdateUser;
