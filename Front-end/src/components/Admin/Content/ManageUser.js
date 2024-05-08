@@ -5,11 +5,14 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { getAllUser } from '../../../services/apiServices';
 import ModalUpdateUser from './ModalUpdateUser';
+import ModalDeleteUser from './ModalDeleteUser';
 
 const ManageUser = (props) => {
     const [showModalCreateUser, setShowModalCreateUser] = useState(false);
     const [showModalUpdateUser, setShowModalUpdateUser] = useState(false);
+    const [showModalDeleteUser, setShowModalDeleteUser] = useState(false);
     const [dataUpdate, setDataUpdate] = useState({});
+    const [dataDelete, setDataDelete] = useState({});
     const [listUsers, setListUsers] = useState([]);
 
     useEffect(() => {
@@ -32,6 +35,11 @@ const ManageUser = (props) => {
     const resetUpdateData = () => {
         setDataUpdate({});
     };
+
+    const handleClickBtnDelete = (user) => {
+        setShowModalDeleteUser(true);
+        setDataDelete(user);
+    };
     return (
         <div className="manage-user-container">
             <div className="title">Quản lý người dùng</div>
@@ -44,7 +52,11 @@ const ManageUser = (props) => {
                 </div>
             </div>
             <div className="table-users-container">
-                <TableUser listUsers={listUsers} handleClickBtnUpdate={handleClickBtnUpdate} />
+                <TableUser
+                    listUsers={listUsers}
+                    handleClickBtnUpdate={handleClickBtnUpdate}
+                    handleClickBtnDelete={handleClickBtnDelete}
+                />
             </div>
             <ModalCreateUser
                 show={showModalCreateUser}
@@ -57,6 +69,12 @@ const ManageUser = (props) => {
                 setShow={setShowModalUpdateUser}
                 dataUpdate={dataUpdate}
                 resetUpdateData={resetUpdateData}
+            />
+            <ModalDeleteUser
+                show={showModalDeleteUser}
+                setShow={setShowModalDeleteUser}
+                dataDelete={dataDelete}
+                fetchListUser={fetchListUser}
             />
         </div>
     );

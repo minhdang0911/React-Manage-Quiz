@@ -1,5 +1,24 @@
+import React, { useState } from 'react';
+import { Button, Modal, Box, Typography, Paper, Grid, IconButton } from '@mui/material';
+import { Close } from '@mui/icons-material';
+
 const TableUser = (props) => {
     const { listUsers } = props;
+    const [detailUser, setDetailUser] = useState(null);
+    const [previewImage, setPreviewImage] = useState('');
+
+    const handleViewDetail = (user) => {
+        setDetailUser(user);
+        if (user.image) {
+            setPreviewImage(`data:image/jpeg;base64,${user.image}`);
+        } else {
+            setPreviewImage('');
+        }
+    };
+
+    const handleClose = () => {
+        setDetailUser(null);
+    };
 
     return (
         <>
@@ -24,14 +43,21 @@ const TableUser = (props) => {
                                     <td>{item.email}</td>
                                     <td>{item.role}</td>
                                     <td>
-                                        <button className="btn btn-secondary">View</button>
+                                        <button className="btn btn-secondary" onClick={() => handleViewDetail(item)}>
+                                            View
+                                        </button>
                                         <button
                                             className="btn btn-warning mx-3"
                                             onClick={() => props.handleClickBtnUpdate(item)}
                                         >
                                             Update
                                         </button>
-                                        <button className="btn btn-danger">Delete</button>
+                                        <button
+                                            className="btn btn-danger"
+                                            onClick={() => props.handleClickBtnDelete(item)}
+                                        >
+                                            Delete
+                                        </button>
                                     </td>
                                 </tr>
                             );
@@ -44,6 +70,59 @@ const TableUser = (props) => {
                     )}
                 </tbody>
             </table>
+
+            <Modal open={!!detailUser} onClose={handleClose}>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '90%',
+                        maxWidth: 400,
+                        bgcolor: 'white',
+                        boxShadow: 24,
+                        borderRadius: 4,
+                        p: 2,
+                    }}
+                >
+                    <Grid container justifyContent="space-between" alignItems="center">
+                        <Typography variant="h6">User Detail</Typography>
+                        <IconButton onClick={handleClose}>
+                            <Close />
+                        </IconButton>
+                    </Grid>
+                    <Typography variant="body1">
+                        <strong>Username:</strong> {detailUser?.username}
+                    </Typography>
+                    <Typography variant="body1">
+                        <strong>Email:</strong> {detailUser?.email}
+                    </Typography>
+                    <Typography variant="body1">
+                        <strong>Role:</strong> {detailUser?.role}
+                    </Typography>
+                    <Paper
+                        sx={{
+                            width: '100%',
+                            height: 'auto',
+                            borderRadius: 4,
+                            overflow: 'hidden',
+                            mt: 2,
+                        }}
+                    >
+                        <img
+                            src={previewImage}
+                            alt="User preview"
+                            style={{
+                                width: '100%',
+                                height: '150px',
+                                display: 'block',
+                            }}
+                        />
+                    </Paper>
+                    {/* Add more details if needed */}
+                </Box>
+            </Modal>
         </>
     );
 };
