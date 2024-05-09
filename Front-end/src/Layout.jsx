@@ -37,7 +37,7 @@ const Layout = (props) => {
                 pauseOnHover
                 theme="light"
             />{' '}
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </>
     );
 };
