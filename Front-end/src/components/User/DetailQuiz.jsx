@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { getDataQuiz } from '../../services/apiServices';
 import './DetailQuiz.scss';
+import ListQuiz from './ListQuiz';
 import Question from './Question';
 
 const DetailQuiz = (props) => {
@@ -32,6 +33,7 @@ const DetailQuiz = (props) => {
                             questionDescription = item.description;
                             image = item.image;
                         }
+                        item.answers.isSelected = false;
                         answers.push(item.answers);
                         console.log('item,answers', item.answers);
                     });
@@ -58,6 +60,28 @@ const DetailQuiz = (props) => {
         }
     };
 
+    const handleDadCheckbox = (answerId, questionId) => {
+        let dataQuizClone = _.cloneDeep(dataQuiz);
+        let q = dataQuizClone.find((item) => +item.questionId === +questionId);
+        if (q && q.answers) {
+            let b = q.answers.map((item) => {
+                if (item.id === +answerId) {
+                    item.isSelected = !item.isSelected;
+                }
+                return item;
+            });
+
+            q.answers = b;
+
+            console.log('b', b);
+        }
+        let index = dataQuizClone.findIndex((item) => +item.questionId === +questionId);
+        if (index > -1) {
+            dataQuizClone[index] = q;
+            setDataQuiz(dataQuizClone);
+        }
+    };
+
     return (
         <div className="detail-quiz-container">
             <div className="left-content">
@@ -69,13 +93,21 @@ const DetailQuiz = (props) => {
                     <img />
                 </div>
                 <div className="q-content">
-                    <Question index={index} data={dataQuiz && dataQuiz.length ? dataQuiz[index] : []} />
+                    <Question
+                        handleDadCheckbox={handleDadCheckbox}
+                        index={index}
+                        data={dataQuiz && dataQuiz.length ? dataQuiz[index] : []}
+                    />
                 </div>
                 <div className="footer">
                     <button className="btn btn-secondary" onClick={() => handlePrevious()}>
                         Previous
                     </button>
                     <button className="btn btn-primary" onClick={() => handleNext()}>
+                        Next
+                    </button>
+
+                    <button className="btn btn-warning" onClick={() => handleNext()}>
                         Next
                     </button>
                 </div>
