@@ -5,11 +5,12 @@ import { FaTachometerAlt, FaGem, FaList, FaGithub, FaRegLaughWink, FaHeart } fro
 import sidebarBg from '../../assets/bg2.jpg';
 import { DiReact } from 'react-icons/di';
 import { MdDasboard } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Sidebar.scss';
 
 const SideBar = (props) => {
     const { image, collapsed, toggled, handleToggleSidebar } = props;
+    const navigate = useNavigate();
     return (
         <>
             <ProSidebar
@@ -33,7 +34,7 @@ const SideBar = (props) => {
                         }}
                     >
                         <DiReact size={'3em'} color={'00bfff'} />
-                        Admin manage Quiz
+                        <span onClick={() => navigate('/')}> Admin manage Quiz</span>
                     </div>
                 </SidebarHeader>
 
@@ -58,7 +59,11 @@ const SideBar = (props) => {
                                 Quản lý Users
                                 <Link to="/admins/manage-users"></Link>
                             </MenuItem>
-                            <MenuItem> Quản lý Bài Quiz</MenuItem>
+                            <MenuItem>
+                                {' '}
+                                Quản lý Bài Quiz
+                                <Link to="/admins/manage-quizzes"></Link>
+                            </MenuItem>
                             <MenuItem> Quản lý Câu Hỏi</MenuItem>
                         </SubMenu>
                     </Menu>
