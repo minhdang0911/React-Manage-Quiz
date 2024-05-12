@@ -18,26 +18,36 @@
         .group-upload {
             padding-top: 15px;
             .label-up {
-                height: 30px;
-                border: 1px solid red;
-                border-radius: 5px;
                 margin-right: 5px;
                 cursor: pointer;
+                color: #9068ff;
+
+                &:hover {
+                    color: #4400ff;
+                }
             }
         }
 
         .btn-add {
-            padding-top: 12px;
+            padding: 15px;
 
             .icon-add {
                 font-size: 20px;
                 cursor: pointer;
+                color: #2596ff;
+                &:hover {
+                    color: #0989ff;
+                }
             }
 
             .icon-remove {
                 font-size: 20px;
                 margin-left: 10px;
                 cursor: pointer;
+                color: #e8771c;
+                &:hover {
+                    color: #ff7608;
+                }
             }
         }
     }
