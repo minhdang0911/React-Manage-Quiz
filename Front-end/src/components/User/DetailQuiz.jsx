@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { getDataQuiz, postSubmitQuiz } from '../../services/apiServices';
+import RightContent from './Content/RightContent';
 import './DetailQuiz.scss';
 import ListQuiz from './ListQuiz';
 import ModalResult from './ModalResult';
@@ -167,7 +168,9 @@ const DetailQuiz = (props) => {
                     </button>
                 </div>
             </div>
-            <div className="right-content">count down</div>
+            <div className="right-content">
+                <RightContent dataQuiz={dataQuiz} />
+            </div>
             <ModalResult show={isShowModalResult} setShow={setIsShowModalResult} dataModalResult={dataModalResult} />
         </div>
     );
