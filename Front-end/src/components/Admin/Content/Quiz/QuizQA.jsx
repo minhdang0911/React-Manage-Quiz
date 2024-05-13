@@ -11,6 +11,7 @@ import {
     postCreateNewAnswerForQuestion,
     postCreateNewQuestionForQuiz,
     getQuizWithQA,
+    postUpsertQA,
 } from '../../../../services/apiServices';
 
 import './QuizQA.scss';
@@ -20,6 +21,7 @@ const QuizQA = (props) => {
     const [listQuiz, setListQuiz] = useState([]);
     const [seletedQuiz, setSelectedQuiz] = useState({});
     const [isPreviewImage, setIsPreviewImage] = useState(false);
+
     const [dataImagePreview, setDataImagePreview] = useState({
         title: '',
         url: '',
@@ -92,18 +94,25 @@ const QuizQA = (props) => {
     ];
 
     const [questions, setQuestions] = useState(initQuestions);
+    const uuidToInt = (uuid) => {
+        let num = 0;
+        for (let i = 0; i < uuid.length; i++) {
+            num += uuid.charCodeAt(i);
+        }
+        return num;
+    };
 
     const handleAddRemoveQuestion = (type, id) => {
         console.log('type', type);
         if (type === 'ADD') {
             const newQuestion = {
-                id: uuidv4(),
+                id: uuidToInt(uuidv4()),
                 description: 'questions 1',
                 imageFile: '',
                 imageName: '',
                 answers: [
                     {
-                        id: uuidv4(),
+                        id: uuidToInt(uuidv4()),
                         description: '',
                         isCorrect: false,
                     },
@@ -124,7 +133,7 @@ const QuizQA = (props) => {
         let questionsClone = _.cloneDeep(questions);
         if (type === 'ADD') {
             const newAnswer = {
-                id: uuidv4(),
+                id: uuidToInt(uuidv4()),
                 description: '',
                 isCorrect: false,
             };
@@ -185,29 +194,6 @@ const QuizQA = (props) => {
     };
 
     const handleSubmitQuestionForQuiz = async () => {
-        console.log('question', questions, seletedQuiz);
-
-        // Submit questions
-        // await Promise.all(
-        //     questions.map(async (question) => {
-        //         const createdQuestion = await postCreateNewQuestionForQuiz(
-        //             +seletedQuiz.value,
-        //             question.description,
-        //             question.imageFile,
-        //         );
-        //         // Submit answers
-        //         await Promise.all(
-        //             question.answers.map(async (answer) => {
-        //                 await postCreateNewAnswerForQuestion(
-        //                     answer.description,
-        //                     answer.isCorrect,
-        //                     createdQuestion.DT.id,
-        //                 );
-        //             }),
-        //         );
-        //     }),
-        // );
-
         //vallidate quiz
         if (_.isEmpty(seletedQuiz)) {
             toast.error('Please choose a quiz');
@@ -251,16 +237,32 @@ const QuizQA = (props) => {
             return;
         }
 
-        for (const question of questions) {
-            const q = await postCreateNewQuestionForQuiz(+seletedQuiz.value, question.description, question.imageFile);
-            //submit answer
-            for (const answer of question.answers) {
-                await postCreateNewAnswerForQuestion(answer.description, answer.isCorrect, q.DT.id);
+        let questionsClone = _.cloneDeep(questions);
+
+        for (let i = 0; i < questionsClone.length; i++) {
+            if (questionsClone[i].imageFile) {
+                questionsClone[i].imageFile = await toBase64(questionsClone[i].imageFile);
             }
         }
-        toast.success('Create Question and answers success');
-        setQuestions(initQuestions);
+
+        let res = await postUpsertQA({
+            quizId: seletedQuiz.value,
+            questions: questionsClone,
+        });
+
+        if (res && res.EC === 0) {
+            toast.success(res.EM);
+            fetchQuizWithQA();
+        }
     };
+
+    const toBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+        });
 
     const handlePReviewImage = (questionId) => {
         let questionsClone = _.cloneDeep(questions);
