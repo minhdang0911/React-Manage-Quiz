@@ -5,6 +5,7 @@ import { RiImageAddFill } from 'react-icons/ri';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import Lightbox from 'react-awesome-lightbox';
+import { toast } from 'react-toastify';
 import {
     getAllQuizForAdmin,
     postCreateNewAnswerForQuestion,
@@ -40,9 +41,7 @@ const Questions = (props) => {
         }
     };
 
-    console.log('list quiz', listQuiz);
-
-    const [questions, setQuestions] = useState([
+    const initQuestions = [
         {
             id: uuidv4(),
             description: '',
@@ -56,7 +55,9 @@ const Questions = (props) => {
                 },
             ],
         },
-    ]);
+    ];
+
+    const [questions, setQuestions] = useState(initQuestions);
 
     const handleAddRemoveQuestion = (type, id) => {
         console.log('type', type);
@@ -153,25 +154,78 @@ const Questions = (props) => {
         console.log('question', questions, seletedQuiz);
 
         // Submit questions
-        await Promise.all(
-            questions.map(async (question) => {
-                const createdQuestion = await postCreateNewQuestionForQuiz(
-                    +seletedQuiz.value,
-                    question.description,
-                    question.imageFile,
-                );
-                // Submit answers
-                await Promise.all(
-                    question.answers.map(async (answer) => {
-                        await postCreateNewAnswerForQuestion(
-                            answer.description,
-                            answer.isCorrect,
-                            createdQuestion.DT.id,
-                        );
-                    }),
-                );
-            }),
-        );
+        // await Promise.all(
+        //     questions.map(async (question) => {
+        //         const createdQuestion = await postCreateNewQuestionForQuiz(
+        //             +seletedQuiz.value,
+        //             question.description,
+        //             question.imageFile,
+        //         );
+        //         // Submit answers
+        //         await Promise.all(
+        //             question.answers.map(async (answer) => {
+        //                 await postCreateNewAnswerForQuestion(
+        //                     answer.description,
+        //                     answer.isCorrect,
+        //                     createdQuestion.DT.id,
+        //                 );
+        //             }),
+        //         );
+        //     }),
+        // );
+
+        //vallidate quiz
+        if (_.isEmpty(seletedQuiz)) {
+            toast.error('Please choose a quiz');
+            return;
+        }
+
+        //validate answer
+        let isValidAnswer = true;
+        let indexQ = 0,
+            indexA = 0;
+        for (let i = 0; i < questions.length; i++) {
+            for (let j = 0; j < questions[i].answers.length; j++) {
+                if (!questions[i].answers[j].description) {
+                    isValidAnswer = false;
+                    indexA = j;
+                    break;
+                }
+            }
+            indexQ = i;
+            if (isValidAnswer === false) break;
+        }
+        if (isValidAnswer === false) {
+            toast.error(`Not empty Answer ${indexA + 1} at Question ${indexQ + 1}`);
+            return;
+        }
+
+        //validate question
+        let isValidQuestion = true;
+        let indexQ1 = 0;
+
+        for (let i = 0; i < questions.length; i++) {
+            if (!questions[i].description) {
+                isValidQuestion = false;
+                indexQ1 = i;
+                break;
+            }
+        }
+
+        if (isValidQuestion === false) {
+            toast.error(`Not empty description for Question ${indexQ1 + 1}`);
+            return;
+        }
+
+        for (const question of questions) {
+            const q = await postCreateNewQuestionForQuiz(+seletedQuiz.value, question.description, question.imageFile);
+            //submit answer
+            for (const answer of question.answers) {
+                await postCreateNewAnswerForQuestion(answer.description, answer.isCorrect, q.DT.id);
+            }
+        }
+        toast.success('Create Question and answers success');
+        setQuestions(initQuestions);
     };
 
     const handlePReviewImage = (questionId) => {
