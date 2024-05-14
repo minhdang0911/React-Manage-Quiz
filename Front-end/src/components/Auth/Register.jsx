@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { postRegister } from '../../services/apiServices';
 import { toast } from 'react-toastify';
 import { VscEye, VscEyeClosed } from 'react-icons/vsc';
+import Language from '../Headers/Language';
 const Register = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -48,17 +49,18 @@ const Register = (props) => {
     return (
         <div className="login-container">
             <div className="header">
-                <span>Don't have an account yet?</span>
+                <span>Tạo tài khoản ngay nào</span>
                 <button
                     onClick={() => {
                         navigate('/login');
                     }}
                 >
-                    Login
+                    Đăng nhập
                 </button>
+                {/* <Language /> */}
             </div>
             <div className="title col-4 mx-auto">TMD Quiz</div>
-            <div className="welcome col-4 mx-auto">Hello, who’s this?</div>
+            <div className="welcome col-4 mx-auto">Xin chào, ai đấy nhỉ?</div>
             <div className="content-form col-4 mx-auto">
                 <div className="form-group">
                     <label>Email</label>
@@ -70,7 +72,7 @@ const Register = (props) => {
                     />
                 </div>
                 <div className="form-group pass-group ">
-                    <label>Password</label>
+                    <label>Mật khẩu</label>
                     <input
                         type={isShowPassword ? 'text' : 'password'}
                         className="form-control"
@@ -89,7 +91,7 @@ const Register = (props) => {
                 </div>
 
                 <div className="form-group">
-                    <label>username</label>
+                    <label>Tên người dùng</label>
                     <input
                         type="text"
                         className="form-control"
@@ -100,7 +102,7 @@ const Register = (props) => {
 
                 <div>
                     <button className="btn-submit" onClick={() => handleLogin()}>
-                        Register
+                        Đăng ký
                     </button>
                     <div className=" text-center">
                         <span
@@ -110,7 +112,7 @@ const Register = (props) => {
                             }}
                         >
                             {' '}
-                            &#60; &#60; Go to homepage
+                            &#60; &#60; Trở lại trang chủ
                         </span>
                     </div>
                 </div>

@@ -1,0 +1,19 @@
+{
+    "homepage": {
+        "title1": "Có một cách hỏi tốt hơn",
+        "title2": "Bạn không muốn tạo ra một biểu mẫu nhàm chán và khán giả của bạn cũng sẽ không muốn điền vào đó. Thay vào đó, hãy tạo một Typeform để làm hài lòng tất cả mọi người.",
+        "title3": {
+            "login": "Bắt đầu ngay. Hoàn toàn miễn phí.",
+            "doing": "Làm bài kiểm tra ngay"
+        },
+        "header": {
+            "Home": "Trang chủ",
+            "Quiz": "Câu Hỏi",
+            "admin": "Quản trị",
+            "user": "Người dùng",
+            "profile": "Hồ sơ",
+            "Logout": "Đăng xuất",
+            "login": "Đăng nhập"
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "homepage": {
+        "title1": "There's a better way to ask ",
+        "title2": " You don't want to makle a boring form. And your audience won't answer ond. Create a typeform instead-and make everyone happy",
+        "title3": {
+            "login": "Get's started. It's free",
+            "doing": "   Doing Quiz Now"
+        },
+        "header": {
+            "Home": "Home",
+            "Quiz": "Quiz",
+            "admin": "Admin",
+            "user": "User",
+            "profile": "Profile",
+            "Logout": "Logout",
+            "login": "Login"
+        }
+    }
+}
