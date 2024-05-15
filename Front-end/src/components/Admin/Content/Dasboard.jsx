@@ -1,64 +1,111 @@
 import './Dashboard.scss';
-import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
+import { getOverview } from '../../../services/apiServices';
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, ResponsiveContainer } from 'recharts';
+import { useState, useEffect } from 'react';
 const Dashboard = (props) => {
-    const data = [
-        {
-            name: 'Page A',
-            uv: 4000,
-            pv: 2400,
-        },
-        {
-            name: 'Page B',
-            uv: 3000,
-            pv: 1398,
-        },
-        {
-            name: 'Page C',
-            uv: 2000,
-            pv: 9800,
-        },
-        {
-            name: 'Page D',
-            uv: 2780,
-            pv: 3908,
-        },
-        {
-            name: 'Page E',
-            uv: 1890,
-            pv: 4800,
-        },
-        {
-            name: 'Page F',
-            uv: 2390,
-            pv: 3800,
-        },
-        {
-            name: 'Page G',
-            uv: 3490,
-            pv: 4300,
-        },
-    ];
+    const [dataOverview, setDataOverview] = useState([]);
+    const [dataChart, setDataChart] = useState([]);
+
+    useEffect(() => {
+        document.title = 'Dasboard Admin';
+        fetchDataOverview();
+    }, []);
+
+    const fetchDataOverview = async () => {
+        let res = await getOverview();
+        if (res && res.EC === 0) {
+            setDataOverview(res.DT);
+
+            //process chart data
+            let QZ,
+                QS,
+                AS = 0;
+            QZ = res.DT.others.countQuiz;
+            QS = res.DT.others.countQuestions;
+            AS = res.DT.others.countAnswers;
+            const data = [
+                {
+                    name: 'Quizzes',
+                    QZ: QZ,
+                },
+                {
+                    name: 'Questions',
+                    QS: QS,
+                },
+                {
+                    name: 'Answers',
+                    AS: AS,
+                },
+            ];
+
+            setDataChart(data);
+        }
+    };
 
     return (
         <div className="dashboard-container">
             <div className="title">analytics Dasboard</div>
             <div className="content">
                 <div className="c-left">
-                    <div className="child">Total users</div>
-                    <div className="child">Total Quiz</div>
-                    <div className="child">Total Question</div>
-                    <div className="child">Total Answer</div>
+                    <div className="child">
+                        <span className="text-1">Total users</span>
+                        <span className="text-2">
+                            {dataOverview && dataOverview.users && dataOverview.users.total ? (
+                                <>{dataOverview.users.total} </>
+                            ) : (
+                                <>0</>
+                            )}
+                        </span>
+                    </div>
+                    <div className="child">
+                        {' '}
+                        <span className="text-1">Total Quizzess</span>
+                        <span className="text-2">
+                            {' '}
+                            {dataOverview && dataOverview.others && dataOverview.others.countQuiz ? (
+                                <>{dataOverview.others.countQuiz} </>
+                            ) : (
+                                <>0</>
+                            )}
+                        </span>
+                    </div>
+                    <div className="child">
+                        {' '}
+                        <span className="text-1">Total Questions</span>
+                        <span className="text-2">
+                            {dataOverview && dataOverview.others && dataOverview.others.countQuestions ? (
+                                <>{dataOverview.others.countQuestions} </>
+                            ) : (
+                                <>0</>
+                            )}
+                        </span>
+                    </div>
+                    <div className="child">
+                        {' '}
+                        <span className="text-1">Total Answers</span>
+                        <span className="text-2">
+                            {' '}
+                            {dataOverview && dataOverview.others && dataOverview.others.countAnswers ? (
+                                <>{dataOverview.others.countAnswers} </>
+                            ) : (
+                                <>0</>
+                            )}
+                        </span>
+                    </div>
                 </div>
                 <div className="c-right">
-                    <BarChart width={400} height={300} data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="pv" fill="#8884d8" />
-                        <Bar dataKey="uv" fill="#82ca9d" />
-                    </BarChart>
+                    <ResponsiveContainer width="95%" height={'100%'}>
+                        <BarChart data={dataChart}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="QZ" fill="#8884d8" />
+                            <Bar dataKey="QS" fill="#82ca9d" />
+                            <Bar dataKey="AS" fill="#fcb12a" />
+                        </BarChart>
+                    </ResponsiveContainer>
                 </div>
             </div>
         </div>
